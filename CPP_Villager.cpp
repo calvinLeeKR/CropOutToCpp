@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
+#pragma once
 
 #include "CPP_Villager.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/DecalComponent.h"
+
 
 // Sets default values
 ACPP_Villager::ACPP_Villager()
@@ -67,6 +68,8 @@ void ACPP_Villager::BeginPlay()
 	Super::BeginPlay();
 	FHitResult HitResult;
 	AddActorWorldOffset(FVector(0.0f, 0.0f, 0.0f), false, &HitResult, ETeleportType::None);
+
+	Mesh->SetCustomDepthStencilValue(FMath::FRandRange(0.0f, 1.0f));
 }
 
 // Called every frame
@@ -82,4 +85,20 @@ void ACPP_Villager::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
+
+void ACPP_Villager::Eat() {
+	UGameplayStatics::GetGameMode(this);
+}
+
+/*void ACPP_Villager::ResetJobState()
+{
+}
+
+void ACPP_Villager::StopJob()
+{
+}
+
+void ACPP_Villager::HairPick()
+{
+}*/
 
