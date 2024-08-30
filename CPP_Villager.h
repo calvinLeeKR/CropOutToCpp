@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Kismet/GameplayStatics.h"
+#include "CPPI_Resource.h"
 #include "CPP_Villager.generated.h"
 
 UCLASS()
@@ -46,14 +47,10 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// user defined functions
-	UFUNCTION(BlueprintImplementableEvent, Category = "MyVillagerFunction")
-		void Eat();
-	UFUNCTION(BlueprintImplementableEvent, Category = "MyVillagerFunction")
-		void ResetJobState();
-	UFUNCTION(BlueprintImplementableEvent, Category = "MyVillagerFunction")
-		void StopJob();
-	UFUNCTION(BlueprintImplementableEvent, Category = "MyVillagerFunction")
-		void HairPick();
+	const void Eat();
+	const void ResetJobState();
+	const void StopJob();
+	const void HairPick();
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Variables", meta = (AllowPrivateAccess = "true"))

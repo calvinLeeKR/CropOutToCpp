@@ -4,6 +4,7 @@
 #include "CPP_Villager.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/DecalComponent.h"
+#include "CPPI_Resource.h"
 
 
 // Sets default values
@@ -69,7 +70,8 @@ void ACPP_Villager::BeginPlay()
 	FHitResult HitResult;
 	AddActorWorldOffset(FVector(0.0f, 0.0f, 0.0f), false, &HitResult, ETeleportType::None);
 
-	Mesh->SetCustomDepthStencilValue(FMath::FRandRange(0.0f, 1.0f));
+	Mesh->SetCustomPrimitiveDataFloat(0, FMath::FRandRange(0.0f, 1.0f));
+	Mesh->SetCustomPrimitiveDataFloat(1, FMath::FRandRange(0.0f, 1.0f));
 }
 
 // Called every frame
@@ -86,19 +88,26 @@ void ACPP_Villager::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 }
 
-void ACPP_Villager::Eat() {
+UFUNCTION(BlueprintImplementableEvent, Category = "MyVillagerFunction")
+const void ACPP_Villager::Eat() {
 	UGameplayStatics::GetGameMode(this);
 }
 
-/*void ACPP_Villager::ResetJobState()
+UFUNCTION(BlueprintImplementableEvent, Category = "MyVillagerFunction")
+const void ACPP_Villager::ResetJobState()
+{
+	Hat->SetSkeletalMeshAsset(NULL);
+	Tool->SetVisibility(false, false);
+	Tool->SetStaticMesh(NULL);
+}
+
+UFUNCTION(BlueprintImplementableEvent, Category = "MyVillagerFunction")
+const void ACPP_Villager::StopJob()
 {
 }
 
-void ACPP_Villager::StopJob()
+UFUNCTION(BlueprintImplementableEvent, Category = "MyVillagerFunction")
+const void ACPP_Villager::HairPick()
 {
 }
-
-void ACPP_Villager::HairPick()
-{
-}*/
 
