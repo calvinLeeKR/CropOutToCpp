@@ -4,8 +4,9 @@
 #include "CPP_Villager.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/DecalComponent.h"
+#include "Engine/AssetManager.h"
 #include "CPPI_Resource.h"
-
+#include "cstring"
 
 // Sets default values
 ACPP_Villager::ACPP_Villager()
@@ -72,6 +73,17 @@ void ACPP_Villager::BeginPlay()
 
 	Mesh->SetCustomPrimitiveDataFloat(0, FMath::FRandRange(0.0f, 1.0f));
 	Mesh->SetCustomPrimitiveDataFloat(1, FMath::FRandRange(0.0f, 1.0f));
+
+	AddActorWorldOffset(FVector(0.0f, 0.0f, Capsule->GetScaledCapsuleHalfHeight()), false, &HitResult, ETeleportType::None);
+	FTimerHandle TimerHandle_EatDelay;
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindUFunction(this, FName("Eat"));
+	GetWorldTimerManager().SetTimer(TimerHandle_EatDelay, 24.0f, false);
+	
+	FPrimaryAssetId HAIR_ID;
+	if (UAssetManager* Manager = UAssetManager::GetIfValid()) {
+		//FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &ACPP_Villager::HairPick );
+	}
 }
 
 // Called every frame
@@ -99,15 +111,49 @@ const void ACPP_Villager::ResetJobState()
 	Hat->SetSkeletalMeshAsset(NULL);
 	Tool->SetVisibility(false, false);
 	Tool->SetStaticMesh(NULL);
+	Target_Tool = NULL;
 }
 
 UFUNCTION(BlueprintImplementableEvent, Category = "MyVillagerFunction")
 const void ACPP_Villager::StopJob()
 {
+	Tool->SetVisibility(false, false);
+	Mesh->GetAnimInstance()->Montage_StopGroupByName(0.0f, FName("DefaultGroup"));
+
+	if (this->GetController()) {
+		this->GetController()->StopMovement();
+	}
+
+	Quantity = 0;
 }
 
 UFUNCTION(BlueprintImplementableEvent, Category = "MyVillagerFunction")
-const void ACPP_Villager::HairPick()
+const USkeletalMesh* ACPP_Villager::HairPick()
 {
+	TCHAR toReturnMeshAddress[80] = {};
+
+	switch (FMath::RandRange(0, 5)) {
+	case 0:
+		_tcscpy(toReturnMeshAddress, L"/Script/Engine.SkeletalMesh'/Game/Characters/Meshes/Hair/SKM_Hair01.SKM_Hair01'"); break;
+		
+	case 1:
+		_tcscpy(toReturnMeshAddress, L"/Script/Engine.SkeletalMesh'/Game/Characters/Meshes/Hair/SKM_Hair02.SKM_Hair02'"); break;
+		
+	case 2:
+		_tcscpy(toReturnMeshAddress, L"/Script/Engine.SkeletalMesh'/Game/Characters/Meshes/Hair/SKM_Hair03.SKM_Hair03'"); break;
+		
+	case 3:
+		_tcscpy(toReturnMeshAddress, L"/Script/Engine.SkeletalMesh'/Game/Characters/Meshes/Hair/SKM_Hair04.SKM_Hair04'"); break;
+		
+	case 4:
+		_tcscpy(toReturnMeshAddress, L"/Script/Engine.SkeletalMesh'/Game/Characters/Meshes/Hair/SKM_Hair05.SKM_Hair05'"); break;
+		
+	case 5:
+		_tcscpy(toReturnMeshAddress, L"/Script/Engine.SkeletalMesh'/Game/Characters/Meshes/Hair/SKM_Hair06.SKM_Hair06'"); break;
+	}
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> RETURN_MESH
+	(toReturnMeshAddress);
+	if (RETURN_MESH.Succeeded()) { return Cast<USkeletalMesh>(RETURN_MESH.Object); }
+	return nullptr;
 }
 

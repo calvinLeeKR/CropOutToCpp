@@ -50,15 +50,18 @@ public:
 	const void Eat();
 	const void ResetJobState();
 	const void StopJob();
-	const void HairPick();
+	const USkeletalMesh* HairPick();
 
-private:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Variables", meta = (AllowPrivateAccess = "true"))
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JobProfile", meta = (AllowPrivateAccess = "true"))
 	AActor* Target_Ref;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Variables", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JobProfile", meta = (AllowPrivateAccess = "true"))
 	FName New_Job;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Variables", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JobProfile", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* Work_Anim;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Variables", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JobProfile", meta = (AllowPrivateAccess = "true"))
 	UStaticMesh* Target_Tool;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resource", meta = (AllowPrivateAccess = "true"))
+	int Quantity;
 };
