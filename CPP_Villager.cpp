@@ -5,6 +5,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/DecalComponent.h"
 #include "Engine/AssetManager.h"
+#include "Engine/ObjectLibrary.h"
 #include "CPPI_Resource.h"
 #include "cstring"
 
@@ -79,10 +80,17 @@ void ACPP_Villager::BeginPlay()
 	FTimerDelegate TimerDelegate;
 	TimerDelegate.BindUFunction(this, FName("Eat"));
 	GetWorldTimerManager().SetTimer(TimerHandle_EatDelay, 24.0f, false);
-	
-	FPrimaryAssetId HAIR_ID;
-	if (UAssetManager* Manager = UAssetManager::GetIfValid()) {
-		//FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &ACPP_Villager::HairPick );
+	//softobject path creating via function
+	UObjectLibrary* lib = UObjectLibrary::CreateLibrary(USkeletalMesh::StaticClass(), false, GIsEditor);
+	lib->AddToRoot();
+	FSoftObjectPath PickedHair = ACPP_Villager::HairPick();
+	lib->LoadAssetDataFromPath(PickedHair.GetAssetPathString());
+	lib->LoadAssetsFromAssetData();
+	//async load
+	auto& StreamManager = UAssetManager::Get().GetStreamableManager();
+	StreamManager.RequestAsyncLoad(PickedHair);
+	if (StreamManager.IsAsyncLoadComplete(PickedHair)) {
+		//Hair->SetSkeletalMeshAsset()
 	}
 }
 
@@ -97,7 +105,6 @@ void ACPP_Villager::Tick(float DeltaTime)
 void ACPP_Villager::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 UFUNCTION(BlueprintImplementableEvent, Category = "MyVillagerFunction")
@@ -128,7 +135,7 @@ const void ACPP_Villager::StopJob()
 }
 
 UFUNCTION(BlueprintImplementableEvent, Category = "MyVillagerFunction")
-const USkeletalMesh* ACPP_Villager::HairPick()
+FSoftObjectPath ACPP_Villager::HairPick()
 {
 	TCHAR toReturnMeshAddress[80] = {};
 
@@ -151,9 +158,11 @@ const USkeletalMesh* ACPP_Villager::HairPick()
 	case 5:
 		_tcscpy(toReturnMeshAddress, L"/Script/Engine.SkeletalMesh'/Game/Characters/Meshes/Hair/SKM_Hair06.SKM_Hair06'"); break;
 	}
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> RETURN_MESH
+	/*static ConstructorHelpers::FObjectFinder<USkeletalMesh> RETURN_MESH
 	(toReturnMeshAddress);
 	if (RETURN_MESH.Succeeded()) { return Cast<USkeletalMesh>(RETURN_MESH.Object); }
-	return nullptr;
+	return nullptr;*/
+	FSoftObjectPath ReturnSkeletalPath(toReturnMeshAddress);
+	return ReturnSkeletalPath;
 }
 

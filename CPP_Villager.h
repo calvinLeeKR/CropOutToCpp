@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "CPPI_Resource.h"
 #include "CPP_Villager.generated.h"
 
@@ -50,7 +51,7 @@ public:
 	const void Eat();
 	const void ResetJobState();
 	const void StopJob();
-	const USkeletalMesh* HairPick();
+	FSoftObjectPath HairPick();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JobProfile", meta = (AllowPrivateAccess = "true"))
