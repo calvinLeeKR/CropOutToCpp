@@ -30,7 +30,7 @@ public:
 		void AddResource(EResourceType Resource, int32 Value);
 
 	//UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "ResourceManagement")
-	//	void GetCurrentResource(TMap<EResourceType, int32> Resources);
+	//	void GetCurrentResource(TMap<int32, EResourceType> Resources);
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "ResourceManagement")
 		void RemoveTargetResource(EResourceType NewParam, int32 NewParam1);

@@ -6,7 +6,7 @@
 #include "Components/DecalComponent.h"
 #include "Engine/AssetManager.h"
 #include "Engine/ObjectLibrary.h"
-#include "CPPI_Resource.h"
+#include "CPPI_Resource.h" //interface
 #include "cstring"
 
 // Sets default values
@@ -65,6 +65,12 @@ ACPP_Villager::ACPP_Villager()
 	}
 }
 
+UFUNCTION(BlueprintImplementableEvent, Category = "MyVillagerFunction")
+const void ACPP_Villager::Eat() {
+	UGameplayStatics::GetGameMode(this);
+}
+
+
 // Called when the game starts or when spawned
 void ACPP_Villager::BeginPlay()
 {
@@ -74,11 +80,11 @@ void ACPP_Villager::BeginPlay()
 
 	Mesh->SetCustomPrimitiveDataFloat(0, FMath::FRandRange(0.0f, 1.0f));
 	Mesh->SetCustomPrimitiveDataFloat(1, FMath::FRandRange(0.0f, 1.0f));
-
 	AddActorWorldOffset(FVector(0.0f, 0.0f, Capsule->GetScaledCapsuleHalfHeight()), false, &HitResult, ETeleportType::None);
+	//set timer
 	FTimerHandle TimerHandle_EatDelay;
 	FTimerDelegate TimerDelegate;
-	TimerDelegate.BindUFunction(this, FName("Eat"));
+	//TimerDelegate.BindUFunction(this, FName("Eat"));
 	GetWorldTimerManager().SetTimer(TimerHandle_EatDelay, 24.0f, false);
 	//softobject path creating via function
 	UObjectLibrary* lib = UObjectLibrary::CreateLibrary(USkeletalMesh::StaticClass(), false, GIsEditor);
@@ -90,8 +96,10 @@ void ACPP_Villager::BeginPlay()
 	auto& StreamManager = UAssetManager::Get().GetStreamableManager();
 	StreamManager.RequestAsyncLoad(PickedHair);
 	if (StreamManager.IsAsyncLoadComplete(PickedHair)) {
-		//Hair->SetSkeletalMeshAsset()
-	}
+		Hair->SetSkeletalMeshAsset(Cast<USkeletalMesh>(PickedHair.ResolveObject()));
+	} //get loaded mesh if success, and set asset
+	Hair->SetCustomPrimitiveDataFloat(0, FMath::FRandRange(0.0f, 1.0f));
+
 }
 
 // Called every frame
@@ -105,11 +113,6 @@ void ACPP_Villager::Tick(float DeltaTime)
 void ACPP_Villager::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-}
-
-UFUNCTION(BlueprintImplementableEvent, Category = "MyVillagerFunction")
-const void ACPP_Villager::Eat() {
-	UGameplayStatics::GetGameMode(this);
 }
 
 UFUNCTION(BlueprintImplementableEvent, Category = "MyVillagerFunction")
