@@ -23,19 +23,19 @@ class CROPOUTSAMPLEPROJECT_API ICPPI_Resource
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "ResourceManagement")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ResourceManagement")
 		void RemoveResource(EResourceType& TargetResource, int32& Value);
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "ResourceManagement")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ResourceManagement")
 		void AddResource(EResourceType Resource, int32 Value);
 
-	//UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "ResourceManagement")
+	//UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ResourceManagement")
 	//	void GetCurrentResource(TMap<int32, EResourceType> Resources);
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "ResourceManagement")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ResourceManagement")
 		void RemoveTargetResource(EResourceType NewParam, int32 NewParam1);
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "ResourceManagement")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ResourceManagement")
 		void CheckResource(EResourceType NewParam1, bool& NewParam, int32& NewParam3);
 
 };

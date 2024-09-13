@@ -6,7 +6,6 @@
 #include "Components/DecalComponent.h"
 #include "Engine/AssetManager.h"
 #include "Engine/ObjectLibrary.h"
-#include "CPPI_Resource.h" //interface
 #include "cstring"
 
 // Sets default values
@@ -169,3 +168,35 @@ FSoftObjectPath ACPP_Villager::HairPick()
 	return ReturnSkeletalPath;
 }
 
+UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "CustomEvent")
+void ACPP_Villager::ReturnToIdle()
+{
+	ACPP_Villager::ChangeJob_Implementation(FName("Idle"));
+}
+void ACPP_Villager::ReturnToDefaultBT_Implementation()
+{
+	ACPP_Villager::ChangeJob_Implementation(FName("Idle"));
+}
+
+UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "CustomEvent")
+void ACPP_Villager::PlayVillagerAnim(UAnimMontage* Montage, float length)
+{
+}
+
+void ACPP_Villager::Action_Implementation(AActor* ParamActor)
+{	
+	if (ParamActor) {
+		Target_Ref = ParamActor;
+		if (ParamActor->Tags[0].IsValid()) {
+			ACPP_Villager::ChangeJob_Implementation(FName(ParamActor->Tags[0].ToString()));
+		}
+	}
+}
+
+void ACPP_Villager::ChangeJob_Implementation(FName NewJob)
+{
+}
+
+void ACPP_Villager::PlayWorkAnim_Implementation(float Delay)
+{
+}

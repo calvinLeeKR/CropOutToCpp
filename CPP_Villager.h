@@ -8,10 +8,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "CPPI_Resource.h"
+#include "CPPI_Villager.h"
 #include "CPP_Villager.generated.h"
 
 UCLASS()
-class CROPOUTSAMPLEPROJECT_API ACPP_Villager : public APawn
+class CROPOUTSAMPLEPROJECT_API ACPP_Villager : public APawn, public ICPPI_Villager, public ICPPI_Resource
 {
 	GENERATED_BODY()
 
@@ -51,6 +52,18 @@ public:
 	const void ResetJobState();
 	const void StopJob();
 	FSoftObjectPath HairPick();
+public:
+	//event calling functions
+	void ReturnToIdle();
+
+	virtual void ReturnToDefaultBT_Implementation() override;
+
+	void PlayVillagerAnim(UAnimMontage* Montage, float length);
+
+	virtual void Action_Implementation(AActor* ParamActor) override;
+	virtual void ChangeJob_Implementation(FName NewJob) override;
+	virtual void PlayWorkAnim_Implementation(float Delay) override;
+
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JobProfile", meta = (AllowPrivateAccess = "true"))
