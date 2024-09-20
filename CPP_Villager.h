@@ -64,7 +64,6 @@ public:
 	virtual void ChangeJob_Implementation(FName NewJob) override;
 	virtual void PlayWorkAnim_Implementation(float Delay) override;
 
-
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JobProfile", meta = (AllowPrivateAccess = "true"))
 	AActor* Target_Ref;

@@ -181,6 +181,11 @@ void ACPP_Villager::ReturnToDefaultBT_Implementation()
 UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "CustomEvent")
 void ACPP_Villager::PlayVillagerAnim(UAnimMontage* Montage, float length)
 {
+	Mesh->GetAnimInstance()->Montage_Play(Montage, 1.0f);
+	//On completed delegate
+	auto MontageCompleteDelegate = ACPP_Villager::Mesh->GetAnimInstance()->Montage_GetBlendingOutDelegate();
+	//Mesh->GetAnimInstance()->Montage_SetBlendingOutDelegate(MontageCompleteDelegate, Montage);
+	
 }
 
 void ACPP_Villager::Action_Implementation(AActor* ParamActor)
@@ -189,14 +194,55 @@ void ACPP_Villager::Action_Implementation(AActor* ParamActor)
 		Target_Ref = ParamActor;
 		if (ParamActor->Tags[0].IsValid()) {
 			ACPP_Villager::ChangeJob_Implementation(FName(ParamActor->Tags[0].ToString()));
+			//Add after completing GI
+			//GetWorld()->GetGameInstance()
 		}
 	}
 }
 
 void ACPP_Villager::ChangeJob_Implementation(FName NewJob)
 {
+	New_Job = NewJob;
+	UDataTable* DT_JobData = LoadObject<UDataTable>(nullptr, TEXT("/Script/Engine.DataTable'/Game/CppBPs/CPPDT_Jobs.CPPDT_Jobs'"));
+	FST_Jobs* Row01 = DT_JobData->FindRow<FST_Jobs>(New_Job, "");
+	if (Tags.Find(New_Job) == -1) {
+		TArray<FName> NewArray;
+		NewArray.Add(New_Job);
+		Tags = NewArray;
+		this->ResetJobState();
+		//stream manager ready
+		auto& StreamManager = UAssetManager::Get().GetStreamableManager();
+		//sequence 00
+		//sequence 01
+		FSoftObjectPath sop_WorkAnim;
+		sop_WorkAnim.SetPath(Row01->WorkAnim->GetPathName());
+		StreamManager.RequestAsyncLoad(sop_WorkAnim);
+		if (StreamManager.IsAsyncLoadComplete(sop_WorkAnim)) {
+			Work_Anim = Cast<UAnimMontage>(sop_WorkAnim.ResolveObject());
+		}
+		//sequence 02
+		FSoftObjectPath sop_Hat;
+		sop_Hat.SetPath(Row01->Hat->GetPathName());
+		StreamManager.RequestAsyncLoad(sop_Hat);
+		if (StreamManager.IsAsyncLoadComplete(sop_Hat)) {
+			Hat->SetSkeletalMesh(Cast<USkeletalMesh>(sop_Hat.ResolveObject()));
+			Hat->SetVisibility(true);
+		}
+		//sequence 03
+		FSoftObjectPath sop_Tool;
+		sop_Tool.SetPath(Row01->Tools->GetPathName());
+		StreamManager.RequestAsyncLoad(sop_Tool);
+		if (StreamManager.IsAsyncLoadComplete(sop_Tool)) {
+			Target_Tool = Cast<UStaticMesh>(sop_Tool.ResolveObject());
+		}
+
+
+	}
 }
 
 void ACPP_Villager::PlayWorkAnim_Implementation(float Delay)
 {
+	this->PlayVillagerAnim(Work_Anim, Delay);
+	Tool->SetStaticMesh(Target_Tool);
+	Tool->SetVisibility(true);
 }
