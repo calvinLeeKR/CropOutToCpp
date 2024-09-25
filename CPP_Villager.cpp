@@ -4,6 +4,8 @@
 #include "CPP_Villager.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/DecalComponent.h"
+#include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/AssetManager.h"
 #include "Engine/ObjectLibrary.h"
 #include "cstring"
@@ -80,6 +82,9 @@ void ACPP_Villager::BeginPlay()
 	Mesh->SetCustomPrimitiveDataFloat(0, FMath::FRandRange(0.0f, 1.0f));
 	Mesh->SetCustomPrimitiveDataFloat(1, FMath::FRandRange(0.0f, 1.0f));
 	AddActorWorldOffset(FVector(0.0f, 0.0f, Capsule->GetScaledCapsuleHalfHeight()), false, &HitResult, ETeleportType::None);
+	//set ai controller
+	AIControllerClass = AAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	//set timer
 	FTimerHandle TimerHandle_EatDelay;
 	FTimerDelegate TimerDelegate;
@@ -213,31 +218,44 @@ void ACPP_Villager::ChangeJob_Implementation(FName NewJob)
 		//stream manager ready
 		auto& StreamManager = UAssetManager::Get().GetStreamableManager();
 		//sequence 00
+		sop_BehaviorTree.SetPath(Row01->BehaviourTree->GetPathName());
+		StreamManager.RequestAsyncLoad(sop_BehaviorTree,
+			FStreamableDelegate::CreateUObject(this, &ACPP_Villager::OnLoadComplete_BehaviorTree));
 		//sequence 01
-		FSoftObjectPath sop_WorkAnim;
 		sop_WorkAnim.SetPath(Row01->WorkAnim->GetPathName());
-		StreamManager.RequestAsyncLoad(sop_WorkAnim);
-		if (StreamManager.IsAsyncLoadComplete(sop_WorkAnim)) {
-			Work_Anim = Cast<UAnimMontage>(sop_WorkAnim.ResolveObject());
-		}
+		StreamManager.RequestAsyncLoad(sop_WorkAnim, 
+			FStreamableDelegate::CreateUObject(this, &ACPP_Villager::OnLoadComplete_AnimMontage));
 		//sequence 02
-		FSoftObjectPath sop_Hat;
 		sop_Hat.SetPath(Row01->Hat->GetPathName());
-		StreamManager.RequestAsyncLoad(sop_Hat);
-		if (StreamManager.IsAsyncLoadComplete(sop_Hat)) {
-			Hat->SetSkeletalMesh(Cast<USkeletalMesh>(sop_Hat.ResolveObject()));
-			Hat->SetVisibility(true);
-		}
+		StreamManager.RequestAsyncLoad(sop_Hat,
+			FStreamableDelegate::CreateUObject(this, &ACPP_Villager::OnLoadComplete_HatSkeletal));
+		
 		//sequence 03
-		FSoftObjectPath sop_Tool;
 		sop_Tool.SetPath(Row01->Tools->GetPathName());
-		StreamManager.RequestAsyncLoad(sop_Tool);
-		if (StreamManager.IsAsyncLoadComplete(sop_Tool)) {
-			Target_Tool = Cast<UStaticMesh>(sop_Tool.ResolveObject());
-		}
-
-
+		StreamManager.RequestAsyncLoad(sop_Tool,
+			FStreamableDelegate::CreateUObject(this, &ACPP_Villager::OnLoadComplete_ToolSkeletal));
 	}
+}
+
+//async complete delegate functions
+void ACPP_Villager::OnLoadComplete_BehaviorTree()
+{
+	AAIController* AIController = Cast<AAIController>(AIControllerClass);
+	AIController->RunBehaviorTree(Cast<UBehaviorTree>(sop_BehaviorTree.ResolveObject()));
+	ActiveBehavior = Cast<UBehaviorTree>(sop_BehaviorTree.ResolveObject());
+	if (Target_Ref) {
+		AIController->GetBlackboardComponent()->GetValueAsObject("Target");
+	}
+}
+void ACPP_Villager::OnLoadComplete_AnimMontage() {
+	Work_Anim = Cast<UAnimMontage>(sop_WorkAnim.ResolveObject());
+}
+void ACPP_Villager::OnLoadComplete_HatSkeletal() {
+	Hat->SetSkeletalMesh(Cast<USkeletalMesh>(sop_Hat.ResolveObject()));
+	Hat->SetVisibility(true);
+}
+void ACPP_Villager::OnLoadComplete_ToolSkeletal() {
+	Target_Tool = Cast<UStaticMesh>(sop_Tool.ResolveObject());
 }
 
 void ACPP_Villager::PlayWorkAnim_Implementation(float Delay)

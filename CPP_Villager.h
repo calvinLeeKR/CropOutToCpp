@@ -61,10 +61,20 @@ public:
 	void PlayVillagerAnim(UAnimMontage* Montage, float length);
 
 	virtual void Action_Implementation(AActor* ParamActor) override;
+
 	virtual void ChangeJob_Implementation(FName NewJob) override;
+		FSoftObjectPath sop_BehaviorTree;
+		void OnLoadComplete_BehaviorTree();
+		FSoftObjectPath sop_WorkAnim;
+		void OnLoadComplete_AnimMontage();
+		FSoftObjectPath sop_Hat;
+		void OnLoadComplete_HatSkeletal();
+		FSoftObjectPath sop_Tool;
+		void OnLoadComplete_ToolSkeletal();
 	virtual void PlayWorkAnim_Implementation(float Delay) override;
 
 public:
+	//subobjects
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JobProfile", meta = (AllowPrivateAccess = "true"))
 	AActor* Target_Ref;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JobProfile", meta = (AllowPrivateAccess = "true"))
@@ -73,6 +83,8 @@ public:
 	UAnimMontage* Work_Anim;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JobProfile", meta = (AllowPrivateAccess = "true"))
 	UStaticMesh* Target_Tool;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "JobProfile")
+	UBehaviorTree* ActiveBehavior;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resource", meta = (AllowPrivateAccess = "true"))
 	int Quantity;

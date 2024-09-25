@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/Datatable.h"
 #include "Engine/UserDefinedStruct.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "CPPST_Job.generated.h"
 
 /**
@@ -22,8 +23,8 @@ USTRUCT(BlueprintType, Atomic)
 struct FST_Jobs : public FTableRowBase {
 	GENERATED_USTRUCT_BODY()
 public:
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//	UBehaviorTree* BehaviourTree;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UBehaviorTree* BehaviourTree;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UAnimMontage* WorkAnim;
