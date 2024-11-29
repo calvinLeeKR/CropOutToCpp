@@ -7,22 +7,22 @@
 #include "Kismet/KismetRenderingLibrary.h" //UTextureRenderTarget2D
 #include "Components/TimelineComponent.h" //UTimelineComponent
 #include "Components/BoxComponent.h" //box collision
-#include "CPPBP_Interactable.generated.h"
+#include "CPP_Interactable.generated.h"
 
 UCLASS()
-class CROPOUTSAMPLEPROJECT_API ACPPBP_Interactable : public AActor
+class CROPOUTSAMPLEPROJECT_API ACPP_Interactable : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
-	ACPPBP_Interactable();
+	ACPP_Interactable();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 public:
@@ -57,9 +57,13 @@ public:
 	float Step = 100.f;
 public:
 	//blueprint macro
-	void TransformToTexture(FVector InVec, FVector2D& ReturnValue, FVector2D& ReturnValue2);
+	void TransformToTexture(FVector2D InVec, FVector2D& ReturnValue, FVector2D& ReturnValue2);
 public:
 	//functions
+	void DelayUntilNextTick();
 	void PlacementMode();
 	float Interact() { return 0.f; };
+	void PlayWobble(FVector NewParam);
+private: //local variables
+	UMaterialInterface* umi;
 };

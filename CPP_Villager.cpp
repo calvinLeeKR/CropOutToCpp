@@ -229,7 +229,6 @@ void ACPP_Villager::ChangeJob_Implementation(FName NewJob)
 		sop_Hat.SetPath(Row01->Hat->GetPathName());
 		StreamManager.RequestAsyncLoad(sop_Hat,
 			FStreamableDelegate::CreateUObject(this, &ACPP_Villager::OnLoadComplete_HatSkeletal));
-		
 		//sequence 03
 		sop_Tool.SetPath(Row01->Tools->GetPathName());
 		StreamManager.RequestAsyncLoad(sop_Tool,
